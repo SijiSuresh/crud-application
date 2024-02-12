@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+.item {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+</style>
+</head>
+<body>
+<div id="navbar"></div>
+<div id="itemList" class="container mt-5"></div>
+<h1 class="text-center">Dashboard</h1>
+
+<script>
+function fetchItems(token) {
+  fetch('https://interview-plus.onrender.com/api/items', {
+    method: 'GET',
+    headers: {
+      'x-access-token': token
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to fetch items');
+    }
+    return response.json();
+  })
+  .then(data => {
+    displayItems(data);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Failed to fetch items. Check console for details.');
+  });
+}
+
+function displayItems(items) {
+  const itemListDiv = document.getElementById('itemList');
+  itemListDiv.innerHTML = ''; // Clear previous items
+
+  items.forEach(item => {
+    const itemDiv = document.createElement('div');
+    itemDiv.classList.add('item', 'row');
+
+    // Item title
+    const titleElement = document.createElement('h2');
+    titleElement.textContent = item.title;
+    titleElement.classList.add('col-md-12');
+
+    // Item image
+    const imageElement = document.createElement('img');
+    imageElement.src = item.image;
+    imageElement.alt = item.title;
+    imageElement.classList.add('col-md-3', 'mb-3');
+
+    // Item details div
+    const detailsDiv = document.createElement('div');
+    detailsDiv.classList.add('col-md-9');
+
+    // Item price
+    const priceElement = document.createElement('p');
+    priceElement.textContent = `Price: $${item.price}`;
+
+    // Item description
+    const descriptionElement = document.createElement('p');
+    descriptionElement.textContent = item.description;
+
+    // Item category
+    const categoryElement = document.createElement('p');
+    categoryElement.textContent = `Category: ${item.category}`;
+
+    // Item rating
+    const ratingElement = document.createElement('p');
+    ratingElement.textContent = `Rating: ${item.rating.rate} (${item.rating.count} reviews)`;
+
+    // Append elements to detailsDiv
+    detailsDiv.appendChild(titleElement);
+    detailsDiv.appendChild(priceElement);
+    detailsDiv.appendChild(descriptionElement);
+    detailsDiv.appendChild(categoryElement);
+    detailsDiv.appendChild(ratingElement);
+
+    // Append imageElement and detailsDiv to itemDiv
+    itemDiv.appendChild(imageElement);
+    itemDiv.appendChild(detailsDiv);
+
+    itemListDiv.appendChild(itemDiv);
+  });
+}
+
+function redirectToDashboard() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+  window.location.href = `dashboard.html?token=${token}`;
+}
+
+// When the page is loaded, fetch items
+window.onload = function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+  fetchItems(token);
+};
+
+fetch('navbar.html')
+  .then(response => response.text())
+  .then(html => {
+    // Insert the fetched navbar HTML into the 'navbar' div
+    document.getElementById('navbar').innerHTML = html;
+  })
+  .catch(error => console.error('Error fetching navbar:', error));
+</script>
+<script src="navbar.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registration</title>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div id="navbar"></div>
+<div class="container mt-5">
+  <h1 class="text-center">Registration Form</h1>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form id="registrationForm">
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input type="text" class="form-control" id="name" name="name">
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" class="form-control" id="email" name="email">
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" class="form-control" id="password" name="password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById("registrationForm").addEventListener("submit", function(event) {
+  event.preventDefault(); // Prevent form submission
+  
+  // Get form data
+  const formData = new FormData(event.target);
+  const requestData = {
+    name: formData.get('name'),
+    email: formData.get('email'),
+    password: formData.get('password')
+  };
+  
+  // Send registration request
+  fetch('https://interview-plus.onrender.com/api/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(requestData)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Registration failed');
+    }
+    return response.json();
+  })
+  .then(data => {
+    alert('Registration successfull! Token received: ' + data.token);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Registration failed. Please try again.');
+  });
+});
+
+fetch('navbar.html')
+  .then(response => response.text())
+  .then(html => {
+    // Insert the fetched navbar HTML into the 'navbar' div
+    document.getElementById('navbar').innerHTML = html;
+  })
+  .catch(error => console.error('Error fetching navbar:', error));
+</script>
+<script src="navbar.js"></script>
+</body>
+</html>
